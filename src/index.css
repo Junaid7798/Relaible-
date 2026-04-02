@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-background: #F8FAFC;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F1F5F9;
+  --color-surface-active: #E2E8F0;
+  
+  --color-primary: #0F172A;
+  --color-primary-hover: #1E293B;
+  --color-primary-active: #334155;
+  --color-on-primary: #FFFFFF;
+  
+  --color-accent: #6366F1;
+  --color-accent-hover: #4F46E5;
+  --color-on-accent: #FFFFFF;
+  
+  --color-text-main: #0F172A;
+  --color-text-muted: #64748B;
+  --color-text-tertiary: #94A3B8;
+  
+  --color-border: #E2E8F0;
+  --color-border-hover: #CBD5E1;
+  
+  --color-success: #10B981;
+  --color-success-bg: #D1FAE5;
+  --color-error: #EF4444;
+  --color-error-bg: #FEE2E2;
+  --color-warning: #F59E0B;
+  --color-warning-bg: #FEF3C7;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  
+  --radius-sm: 4px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 999px;
+
+  --shadow-subtle: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --shadow-floating: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+  --shadow-modal: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.filled-icon {
+  font-variation-settings: 'FILL' 1;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-text-main);
+  min-height: max(884px, 100dvh);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-text-tertiary); }
