@@ -9,7 +9,6 @@ interface LayoutProps {
   onLogout: () => void;
 }
 
-// Role definitions with access levels
 const ROLE_TABS: Record<string, { id: string; label: string; icon: string }[]> = {
   owner: [
     { id: 'DASH', label: 'Dashboard', icon: 'dashboard' },
@@ -43,20 +42,16 @@ const ROLE_TABS: Record<string, { id: string; label: string; icon: string }[]> =
     { id: 'TRIPS', label: 'Trips', icon: 'local_shipping' },
     { id: 'VEHICLE', label: 'Vehicle', icon: 'directions_car' },
   ],
-  partner: [
-    // Dynamically shown based on permissions
-  ],
+  partner: [],
 };
 
 export default function Layout({ children, currentTab, setCurrentTab, userRole, onLogout }: LayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Get tabs for current role
   const roleLower = userRole.toLowerCase();
   const roleKey = Object.keys(ROLE_TABS).find(k => roleLower.includes(k)) || 'owner';
   const allTabs = ROLE_TABS[roleKey] || ROLE_TABS.owner;
   
-  // For mobile: show first 4 and "More"
   const mobileMainTabs = allTabs.slice(0, 4);
   const mobileMoreTabs = allTabs.slice(4);
 
@@ -73,7 +68,6 @@ export default function Layout({ children, currentTab, setCurrentTab, userRole, 
 
   return (
     <>
-      {/* Desktop Header */}
       <header className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-border flex justify-between items-center px-4 md:px-8 h-16 pt-[env(safe-area-inset-top)]">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-subtle">
@@ -86,7 +80,6 @@ export default function Layout({ children, currentTab, setCurrentTab, userRole, 
         </div>
         
         <div className="flex items-center gap-4">
-          {/* Desktop Nav */}
           <div className="hidden md:flex gap-1 mr-2 overflow-x-auto custom-scrollbar">
             {allTabs.map(tab => (
               <button
@@ -110,7 +103,6 @@ export default function Layout({ children, currentTab, setCurrentTab, userRole, 
             ))}
           </div>
           
-          {/* Sync status */}
           <div className="flex items-center gap-3">
             <div className="bg-success-bg px-2.5 py-1 rounded-full flex items-center gap-1.5 border border-success/20 hidden sm:flex">
               <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></div>
@@ -126,12 +118,10 @@ export default function Layout({ children, currentTab, setCurrentTab, userRole, 
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="pt-[calc(4rem+env(safe-area-inset-top))] pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-12 px-4 md:px-8 max-w-7xl mx-auto min-h-screen">
         {children}
       </main>
 
-      {/* Mobile Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 w-full bg-surface/80 backdrop-blur-xl flex justify-around items-center px-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 z-50 border-t border-border md:hidden">
         {mobileMainTabs.map(tab => {
           const isActive = currentTab === tab.id;
@@ -171,7 +161,6 @@ export default function Layout({ children, currentTab, setCurrentTab, userRole, 
         )}
       </nav>
 
-      {/* Mobile More Menu Overlay */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
@@ -186,4 +175,34 @@ export default function Layout({ children, currentTab, setCurrentTab, userRole, 
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 25,
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom))] left-0 w-full z-40 md:hidden bg-surface rounded-t-[24px] border-t border-border p-6 shadow-modal"
+            >
+              <div className="w-12 h-1.5 bg-border rounded-full mx-auto mb-6" />
+              <h3 className="font-bold text-lg mb-4 text-text-main">More Options</h3>
+              <div className="grid grid-cols-4 gap-4">
+                {mobileMoreTabs.map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      setCurrentTab(tab.id);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`flex flex-col items-center justify-center p-3 rounded-xl border ${
+                      currentTab === tab.id 
+                        ? 'bg-primary/5 border-primary/20 text-primary' 
+                        : 'bg-surface-hover border-border text-text-main'
+                    }`}
+                  >
+                    <span className={`material-symbols-outlined mb-2 ${currentTab === tab.id ? 'filled-icon' : ''}`}>{tab.icon}</span>
+                    <span className="text-[11px] font-semibold">{tab.label}</span>
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
