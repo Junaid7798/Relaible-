@@ -153,4 +153,146 @@ export default function Login({ onLogin }: LoginProps) {
             </div>
             <div>
               <label className="text-[13px] font-semibold uppercase tracking-wider text-text-muted ml-1">Password</label>
-              <input type="password" className="w-full h-14 bg-surface-hover border border-border rounded-xl text-xl font-medium px-4 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-text-main" placeholder="••••••••" value={registerData.password} onChange={e => setRegisterData({...registerData, passwor
+              <input type="password" className="w-full h-14 bg-surface-hover border border-border rounded-xl text-xl font-medium px-4 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-text-main" placeholder="••••••••" value={registerData.password} onChange={e => setRegisterData({...registerData, password: e.target.value})} />
+            </div>
+            {error && <p className="text-error text-sm">{error}</p>}
+            <Button type="submit" variant="primary" size="lg" className="w-full" isLoading={isLoading}>Continue</Button>
+          </form>
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (mode === 'join') {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md bg-surface p-8 rounded-3xl shadow-modal border border-border">
+          <button onClick={() => setMode('login')} className="text-text-muted hover:text-text-main mb-4"><span className="material-symbols-outlined">arrow_back</span></button>
+          <div className="w-14 h-14 bg-accent/10 rounded-xl flex items-center justify-center mb-6 mx-auto"><span className="material-symbols-outlined text-accent text-2xl">qr_code</span></div>
+          <h1 className="text-2xl font-bold text-center text-text-main tracking-tight mb-2">Join Organization</h1>
+          <p className="text-center text-text-muted font-medium mb-8">Enter your invite code</p>
+          <form onSubmit={handleAcceptInvite} className="space-y-4">
+            <div>
+              <input type="text" className="w-full h-16 bg-surface-hover border border-border rounded-xl text-2xl font-bold text-center tracking-[0.3em] uppercase focus:ring-2 focus:ring-accent focus:border-accent outline-none transition-all text-text-main" placeholder="XXXXXX" value={inviteCode} onChange={e => setInviteCode(e.target.value.toUpperCase().slice(0, 6))} maxLength={6} />
+            </div>
+            {error && <p className="text-error text-sm text-center">{error}</p>}
+            <Button type="submit" variant="primary" size="lg" className="w-full" isLoading={isLoading}>Join Organization</Button>
+          </form>
+          <p className="text-center text-text-muted text-sm mt-6">Or scan QR code to join</p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background p-6">
+      <div className="max-w-2xl mx-auto">
+        <div className="flex items-center gap-2 mb-8">
+          {['org-details', 'add-sites', 'add-materials', 'add-vehicles', 'invite-team'].map((step, i) => {
+            const steps = ['org-details', 'add-sites', 'add-materials', 'add-vehicles', 'invite-team'];
+            const currentIdx = steps.indexOf(onboardingStep);
+            return <div key={step} className={`flex-1 h-1.5 rounded-full ${i <= currentIdx ? 'bg-accent' : 'bg-border'}`} />;
+          })}
+        </div>
+        <AnimatePresence mode="wait">
+          {onboardingStep === 'org-details' && (
+            <motion.div key="org-details" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="bg-surface p-8 rounded-2xl border border-border">
+              <h2 className="text-2xl font-bold text-text-main mb-2">Set up your Organization</h2>
+              <p className="text-text-muted mb-8">Tell us about your business</p>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-[13px] font-semibold uppercase tracking-wider text-text-muted ml-1">Organization Name</label>
+                  <input type="text" className="w-full h-14 bg-surface-hover border border-border rounded-xl text-xl font-medium px-4 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-text-main" placeholder="Reliable Stone Crushing Industry" value={orgData.name} onChange={e => setOrgData({...orgData, name: e.target.value})} />
+                </div>
+                <div>
+                  <label className="text-[13px] font-semibold uppercase tracking-wider text-text-muted ml-1">Industry</label>
+                  <select className="w-full h-14 bg-surface-hover border border-border rounded-xl text-lg font-medium px-4 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-text-main" value={orgData.industryType} onChange={e => setOrgData({...orgData, industryType: e.target.value})}>
+                    <option value="stone_crushing">Stone Crushing</option>
+                    <option value="logistics">Logistics & Delivery</option>
+                    <option value="retail">Retail</option>
+                    <option value="manufacturing">Manufacturing</option>
+                  </select>
+                </div>
+                {error && <p className="text-error text-sm">{error}</p>}
+                <Button variant="primary" size="lg" className="w-full mt-6" onClick={handleCreateOrg} isLoading={isLoading}>Continue</Button>
+              </div>
+            </motion.div>
+          )}
+          {onboardingStep === 'add-sites' && (
+            <motion.div key="add-sites" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="bg-surface p-8 rounded-2xl border border-border">
+              <h2 className="text-2xl font-bold text-text-main mb-2">Add Your Sites</h2>
+              <p className="text-text-muted mb-6">Create locations (plant, shops, warehouses)</p>
+              <div className="space-y-4 max-h-[400px] overflow-y-auto">
+                {sites.map((site, i) => (
+                  <div key={i} className="p-4 bg-surface-hover rounded-xl border border-border">
+                    <input type="text" className="w-full bg-transparent border-b border-border pb-2 mb-3 text-lg font-medium focus:outline-none focus:border-primary" placeholder="Site name (e.g., Main Plant)" value={site.name} onChange={e => updateSite(i, 'name', e.target.value)} />
+                    <div className="flex gap-3">
+                      <select className="flex-1 h-10 bg-surface rounded-lg text-sm" value={site.type} onChange={e => updateSite(i, 'type', e.target.value)}>
+                        <option value="plant">Plant</option>
+                        <option value="shop">Shop</option>
+                        <option value="warehouse">Warehouse</option>
+                      </select>
+                      <button onClick={() => setSites(sites.filter((_, idx) => idx !== i))} className="text-error"><span className="material-symbols-outlined">delete</span></button>
+                    </div>
+                  </div>
+                ))}
+                <button onClick={addSite} className="w-full p-4 border-2 border-dashed border-border rounded-xl text-text-muted hover:border-accent hover:text-accent transition-colors flex items-center justify-center gap-2"><span className="material-symbols-outlined">add</span> Add Site</button>
+              </div>
+              <Button variant="primary" size="lg" className="w-full mt-6" onClick={handleSitesComplete}>Continue</Button>
+            </motion.div>
+          )}
+          {onboardingStep === 'add-materials' && (
+            <motion.div key="add-materials" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="bg-surface p-8 rounded-2xl border border-border">
+              <h2 className="text-2xl font-bold text-text-main mb-2">Add Materials</h2>
+              <p className="text-text-muted mb-6">Products you deal in (optional)</p>
+              <div className="space-y-4 max-h-[400px] overflow-y-auto">
+                {materials.map((mat, i) => (
+                  <div key={i} className="p-4 bg-surface-hover rounded-xl border border-border">
+                    <input type="text" className="w-full bg-transparent border-b border-border pb-2 mb-3 text-lg font-medium focus:outline-none focus:border-primary" placeholder="Material name" value={mat.name} onChange={e => updateMaterial(i, 'name', e.target.value)} />
+                    <div className="flex gap-3">
+                      <select className="flex-1 h-10 bg-surface rounded-lg text-sm" value={mat.unit} onChange={e => updateMaterial(i, 'unit', e.target.value)}>
+                        <option value="brass">Brass</option>
+                        <option value="bag">Bag</option>
+                        <option value="piece">Piece</option>
+                        <option value="kg">KG</option>
+                        <option value="tonnes">Tonnes</option>
+                      </select>
+                      <input type="text" className="flex-1 h-10 bg-surface rounded-lg text-sm px-3" placeholder="Rate" value={mat.rate} onChange={e => updateMaterial(i, 'rate', e.target.value)} />
+                      <button onClick={() => setMaterials(materials.filter((_, idx) => idx !== i))} className="text-error"><span className="material-symbols-outlined">delete</span></button>
+                    </div>
+                  </div>
+                ))}
+                <button onClick={addMaterial} className="w-full p-4 border-2 border-dashed border-border rounded-xl text-text-muted hover:border-accent hover:text-accent transition-colors flex items-center justify-center gap-2"><span className="material-symbols-outlined">add</span> Add Material</button>
+              </div>
+              <Button variant="primary" size="lg" className="w-full mt-6" onClick={handleMaterialsComplete}>Continue</Button>
+            </motion.div>
+          )}
+          {onboardingStep === 'add-vehicles' && (
+            <motion.div key="add-vehicles" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="bg-surface p-8 rounded-2xl border border-border">
+              <h2 className="text-2xl font-bold text-text-main mb-2">Add Vehicles</h2>
+              <p className="text-text-muted mb-6">Your fleet (optional)</p>
+              <div className="space-y-4 max-h-[400px] overflow-y-auto">
+                {vehicles.map((veh, i) => (
+                  <div key={i} className="p-4 bg-surface-hover rounded-xl border border-border">
+                    <input type="text" className="w-full bg-transparent border-b border-border pb-2 mb-3 text-lg font-medium focus:outline-none focus:border-primary" placeholder="Vehicle name" value={veh.name} onChange={e => updateVehicle(i, 'name', e.target.value)} />
+                    <div className="flex gap-3 flex-wrap">
+                      <select className="h-10 bg-surface rounded-lg text-sm" value={veh.type} onChange={e => updateVehicle(i, 'type', e.target.value)}>
+                        <option value="hywa">Hywa (4-6 brass)</option>
+                        <option value="709">Tata 709 (2 brass)</option>
+                        <option value="chanchat">Chanchat (1 brass)</option>
+                      </select>
+                      <input type="text" className="h-10 bg-surface rounded-lg text-sm px-3 flex-1" placeholder="MH-XX-XXXX" value={veh.registration} onChange={e => updateVehicle(i, 'registration', e.target.value)} />
+                      <button onClick={() => setVehicles(vehicles.filter((_, idx) => idx !== i))} className="text-error"><span className="material-symbols-outlined">delete</span></button>
+                    </div>
+                  </div>
+                ))}
+                <button onClick={addVehicle} className="w-full p-4 border-2 border-dashed border-border rounded-xl text-text-muted hover:border-accent hover:text-accent transition-colors flex items-center justify-center gap-2"><span className="material-symbols-outlined">add</span> Add Vehicle</button>
+              </div>
+              <Button variant="primary" size="lg" className="w-full mt-6" onClick={handleComplete}>Complete Setup</Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
