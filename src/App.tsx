@@ -21,13 +21,19 @@ interface UserData {
   siteIds: string[];
 }
 
+const TabFallback = ({ label }: { label: string }) => (
+  <div className="flex items-center justify-center h-64">
+    <span className="material-symbols-outlined animate-spin text-4xl text-primary">progress_activity</span>
+    <span className="ml-2 text-text-muted">Loading {label}...</span>
+  </div>
+);
+
 function AppContent() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [currentTab, setCurrentTab] = useState('DASH');
 
   useEffect(() => {
     if (userData) {
-      // Start auto-sync when user is logged in
       startAutoSync(30000);
     }
   }, [userData]);
@@ -42,7 +48,6 @@ function AppContent() {
     localStorage.removeItem('accessToken');
   };
 
-  // Show Driver interface for driver role
   if (userData?.role === 'driver') {
     return <Driver userName="Driver" onLogout={handleLogout} />;
   }
@@ -51,7 +56,6 @@ function AppContent() {
     return <Login onLogin={handleLogin} />;
   }
 
-  // Role-based tab filtering
   const getVisibleTabs = () => {
     const role = userData.role.toLowerCase();
     const allTabs = [
@@ -64,13 +68,10 @@ function AppContent() {
       { id: 'TEAM', label: 'Team', roles: ['owner', 'admin'] },
       { id: 'ADMIN', label: 'Admin', roles: ['owner'] },
     ];
-    
     return allTabs.filter(tab => tab.roles.includes(role) || tab.roles.includes('partner'));
   };
 
   const visibleTabs = getVisibleTabs();
-  
-  // Get default tab for role
   const roleDefaultTabs: Record<string, string> = {
     owner: 'DASH',
     admin: 'DASH',
@@ -78,7 +79,6 @@ function AppContent() {
     partner: 'SALES',
   };
   
-  // Set initial tab if current is not visible
   useEffect(() => {
     const visibleIds = visibleTabs.map(t => t.id);
     if (!visibleIds.includes(currentTab)) {
@@ -87,17 +87,19 @@ function AppContent() {
   }, []);
 
   const renderScreen = () => {
-    switch (currentTab) {
-      case 'DASH': return <Dashboard />;
-      case 'FLEET': return <Fleet />;
-      case 'SALES': return <Sales />;
-      case 'ADMIN': return <Admin />;
-      case 'LEDGER': return <Ledger />;
-      case 'STOCK': return <Stock />;
-      case 'EXPENSES': return <Expenses />;
-      case 'TEAM': return <TeamScreen />;
-      default: return <Dashboard />;
-    }
+    const screens: Record<string, React.ReactNode> = {
+      DASH: <Dashboard />,
+      FLEET: <Fleet />,
+      SALES: <Sales />,
+      ADMIN: <Admin />,
+      LEDGER: <Ledger />,
+      STOCK: <Stock />,
+      EXPENSES: <Expenses />,
+      TEAM: <TeamScreen />,
+    };
+    
+    const ScreenComponent = screens[currentTab] || <Dashboard />;
+    return <Suspense fallback={<TabFallback label={currentTab} />}>{ScreenComponent}</Suspense>;
   };
 
   return (
@@ -116,20 +118,13 @@ function AppContent() {
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           className="h-full"
         >
-          <Suspense fallback={
-            <div className="flex items-center justify-center h-64">
-              <span className="material-symbols-outlined animate-spin text-4xl text-primary">progress_activity</span>
-            </div>
-          }>
-            {renderScreen()}
-          </Suspense>
+          {renderScreen()}
         </motion.div>
       </AnimatePresence>
     </Layout>
   );
 }
 
-// Simple Team screen component
 function TeamScreen() {
   const [showInviteModal, setShowInviteModal] = useState(false);
   
